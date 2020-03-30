@@ -26,15 +26,10 @@ class InputArea extends Component {
   }
 
   onChangeHandle = (e) => {
-    //console.log('tg..onChangeHandle2 this.state:', this.state, ' pos:', this.state.position);
     let { name, value } = e.target;
-    //trim: başında sonundaki boşlukları siler
-    value = value.toUpperCase().replace(' ', '');
-    console.log('tg..value:', value);
     this.setState({
       [name]: value,
     });
-    //console.log('tg..onChangeHandle1 this.state:', this.state, ' pos:', this.state.position);
   }
 
   turnLeft = () => {
@@ -96,7 +91,6 @@ class InputArea extends Component {
       default:
         console.log("wrong state direction:", this.state.currentDir);
         break;
-
     }
     this.setState({ currentDir });
     this.myLog('turnRight');
@@ -136,24 +130,27 @@ class InputArea extends Component {
       console.log('out of horizontal boundary: ' + currentX + ' - ' + this.state.horizontalMax);
       this.setState({ errorOccured: true });
       this.myLog('moveIt-OutofhorizontalMax');
+
       return;
     }
     this.setState({ currentX, currentY });
     this.myLog('moveIt');
   }
 
+
   onSubmitHandle = (e) => {
     e.preventDefault();
-
-    if (this.state.upperRightCoords.length !== 2) {
+    let upperRightCoords = this.state.upperRightCoords;
+    upperRightCoords = upperRightCoords.replace(/\s+/g, '').trim();
+    if (upperRightCoords.length !== 2) {
       alert('Max 2 single digits please');
       return;
     }
-    if (! /^\d+$/.test(this.state.upperRightCoords)) {
+    if (! /^\d+$/.test(upperRightCoords)) {
       alert('Only numbers please');
       return;
     }
-    const boundaries = this.state.upperRightCoords.split('');
+    const boundaries = upperRightCoords.split('');
 
     const horizontalMax = parseInt(boundaries[0]);
     const verticalMax = parseInt(boundaries[1]);
@@ -162,7 +159,9 @@ class InputArea extends Component {
       return;
     }
 
-    let intPosition = this.state.roversPosition.split('');
+    let roversPosition = this.state.roversPosition;
+    roversPosition = roversPosition.replace(/\s+/g, '').trim().toUpperCase();
+    let intPosition = roversPosition.split('');
     let currentX, currentY, currentDir;
     try {
       currentX = parseInt(intPosition[0]);
@@ -189,25 +188,33 @@ class InputArea extends Component {
       alert('initial direction should be E,W,S or N. Not ' + currentDir + ' please.');
       return;
     }
-    const instructionList = this.state.instructions.split('');
+
+    let instructions = this.state.instructions;
+    instructions = instructions.replace(/\s+/g, '').trim().toUpperCase();
+
+    const instructionList = instructions.split('');
     for (const instruction of instructionList) {
       if (['M', 'L', 'R'].indexOf(instruction) < 0) {
         alert('Instructions should be L,R or M. Not ' + instruction + ' please.');
         return;
       }
     }
-    console.log('tg..veriler: hor:' + horizontalMax + ' ver:' + verticalMax + ' curX:' + currentX + ' curY:' + currentY + ' curDir:' + currentDir + ' insLis:' + instructionList)
-    console.log('tg..before start this.state:', this.state)
-    this.setState({ horizontalMax, verticalMax, currentX, currentY, currentDir, instructionList, currentIndex: 0, errorOccured: false });
-    console.log('tg..before after this.state:', this.state)
-    this.myLog('start');
+    //console.log('tg..data: hor:' + horizontalMax + ' ver:' + verticalMax + ' curX:' + currentX + ' curY:' + currentY + ' curDir:' + currentDir + ' insLis:' + instructionList)
+
+
+    this.setState({
+      upperRightCoords, roversPosition, instructions, // inputs
+      horizontalMax, verticalMax, // dimension
+      currentX, currentY, currentDir, instructionList, // current
+      currentIndex: 0, errorOccured: false, // runtime
+    });
+    this.myLog('Start');
 
     setTimeout(() => {
       this.run();
-    }, 300); //1sn sonra, run'ı ilk kez çalıştır, currentIndex: 0, yani ilk komutu çalıştır
+    }, 500); //after 500ms , run starts first time, currentIndex: 0, first instruction starts
 
 
-    //console.log('tg..funchandleSubmit-9 state:',this.state);
   }
 
   run() {
@@ -230,9 +237,8 @@ class InputArea extends Component {
         break;
     }
 
-    //console.log('tg..funchandleSubmit-9 state:',this.state);
     if (this.state.errorOccured) {
-      console.log('hata oldu, dışarıya çıktı');
+      console.log('something wrong, out');
       return;
     }
     currentIndex++; // bir sonraki komuta geç
@@ -242,12 +248,11 @@ class InputArea extends Component {
         this.run();
       }, 300); //1sn sonra, run'ı tekrar çalıştır
     } else {
-      console.log('komutlar bitti');
+      console.log('instructions over');
     }
   }
 
   render() {
-    //console.log('tg..func-render state:', this.state, ' pos:', this.state.position)
     return (
       <div>
         <Container fluid>
@@ -263,7 +268,6 @@ class InputArea extends Component {
                 </CardHeader>
                 <CardBody>
                   <Form onSubmit={this.onSubmitHandle}>
-
                     <FormGroup>
                       <label
                         htmlFor="upperRightCoords"
@@ -272,8 +276,9 @@ class InputArea extends Component {
                         name="upperRightCoords"
                         id="upperRightCoords"
                         type='text'
-                        maxLength={2}
+                        // maxLength={2}
                         required
+                        placeholder={"ex:55"}
                         //      defaultValue={'55'}
                         value={this.state.upperRightCoords}
                         onChange={this.onChangeHandle} />
@@ -286,6 +291,7 @@ class InputArea extends Component {
                         name="roversPosition"
                         id="roversPosition"
                         type='text'
+                        placeholder={"ex:33E"}
                         value={this.state.roversPosition}
                         onChange={this.onChangeHandle} />
                     </FormGroup>
@@ -297,6 +303,7 @@ class InputArea extends Component {
                         name="instructions"
                         id="instructions"
                         type='text'
+                        placeholder={"ex:MRLMMM"}
                         value={this.state.instructions}
                         onChange={this.onChangeHandle} />
                     </FormGroup>
