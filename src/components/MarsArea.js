@@ -16,7 +16,7 @@ class MarsArea extends Component {
                     <div className="col-md-6">
                         <h2>
                             <span className="badge badge-success">
-                                Final position : {currentX + '-' + currentY + '-' + currentDir}
+                                Final position : {errorOccured ? '0-0-0' : currentX + '-' + currentY + '-' + currentDir}
                             </span>
                         </h2>
                     </div>

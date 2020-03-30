@@ -26,6 +26,7 @@ class InputArea extends Component {
   }
 
   onChangeHandle = (e) => {
+    //Lets move input values to this.state......
     let { name, value } = e.target;
     this.setState({
       [name]: value,
@@ -56,17 +57,6 @@ class InputArea extends Component {
         break;
     }
     this.setState({ currentDir });
-    this.myLog('turnLeft');
-  }
-
-  myLog(text) {
-    const info = {
-      i: this.state.currentIndex,
-      x: this.state.currentX,
-      y: this.state.currentY,
-      dir: this.state.currentDir
-    };
-    console.log(text, info);
   }
 
   turnRight = () => {
@@ -93,7 +83,6 @@ class InputArea extends Component {
         break;
     }
     this.setState({ currentDir });
-    this.myLog('turnRight');
   }
 
   moveIt = () => {
@@ -122,19 +111,19 @@ class InputArea extends Component {
     }
     if (currentY < 0 || currentY > this.state.verticalMax) {
       console.log('out of vertical boundary: ' + currentY + ' - ' + this.state.verticalMax);
+      alert('out of vertical boundary:');
       this.setState({ errorOccured: true });
-      this.myLog('moveIt-OutofverticalMax');
+
       return;
     }
     if (currentX < 0 || currentX > this.state.horizontalMax) {
       console.log('out of horizontal boundary: ' + currentX + ' - ' + this.state.horizontalMax);
-      this.setState({ errorOccured: true });
-      this.myLog('moveIt-OutofhorizontalMax');
+      alert('out of horizontal boundary');
 
+      this.setState({ errorOccured: true });
       return;
     }
     this.setState({ currentX, currentY });
-    this.myLog('moveIt');
   }
 
 
@@ -208,7 +197,6 @@ class InputArea extends Component {
       currentX, currentY, currentDir, instructionList, // current
       currentIndex: 0, errorOccured: false, // runtime
     });
-    this.myLog('Start');
 
     setTimeout(() => {
       this.run();
@@ -218,7 +206,6 @@ class InputArea extends Component {
   }
 
   run() {
-    this.myLog('run');
     let currentIndex = this.state.currentIndex;
     const instruction = this.state.instructionList[currentIndex];
     // LRMMMLLRRRMM
@@ -251,7 +238,7 @@ class InputArea extends Component {
       console.log('instructions over');
     }
   }
-
+  
   render() {
     return (
       <div>
@@ -314,6 +301,7 @@ class InputArea extends Component {
             </Col>
           </Row>
         </Container>
+        
         <MarsArea state={this.state} />
       </div >
     );
